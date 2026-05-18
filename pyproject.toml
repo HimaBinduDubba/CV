@@ -1,0 +1,6 @@
+[project]
+name = "dimension-extraction-system"
+version = "0.1.0"
+description = "Engineering drawing dimension extraction data processing core"
+requires-python = ">=3.10"
+dependencies = []
