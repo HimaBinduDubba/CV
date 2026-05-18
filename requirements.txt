@@ -1,0 +1,6 @@
+pdf2image
+Pillow
+jsonschema
+tenacity
+pytest
+hypothesis
