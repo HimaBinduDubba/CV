@@ -13,6 +13,10 @@ class PDFConverter:
     def __init__(self, dpi: int = 300):
         self.dpi = dpi
 
+    def convert(self, pdf_path: Path) -> List[Image.Image]:
+        """Pipeline-friendly alias used by DimensionExtractor."""
+        return self.convert_pdf_to_images(pdf_path)
+
     def convert_pdf_to_images(self, pdf_path: Path) -> List[Image.Image]:
         """
         Convert a single or multi-page PDF to a list of images.

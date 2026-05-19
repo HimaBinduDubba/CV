@@ -1,13 +1,15 @@
 import unittest
 from pathlib import Path
 
-from dimension_extractor.extractor import APIResponse, DimensionExtractor
+from src.api.models import APIResponse
+from dimension_extractor.extractor import DimensionExtractor
 from dimension_extractor.models import (
     AssemblyResult,
     Datum,
     Dimension,
     GDTCallout,
     GDTSymbol,
+    MaterialCondition,
     RelationshipType,
     Tolerance,
     ToleranceType,
@@ -25,8 +27,8 @@ class FakeRouter:
     def __init__(self, raw_text: str):
         self.raw_text = raw_text
 
-    def extract_from_image(self, image, prompt: str):
-        return APIResponse(raw_text=self.raw_text, confidence_score=0.91)
+    def extract_from_image(self, prompt: str, images):
+        return APIResponse(provider="test", raw_response={"text": self.raw_text}, confidence=0.91)
 
 
 class Developer3CoreTests(unittest.TestCase):
@@ -146,6 +148,42 @@ class Developer3CoreTests(unittest.TestCase):
         self.assertEqual(result.dimensions[0].unit, "mm")
         self.assertTrue(result.validation.is_valid)
         self.assertGreater(result.confidence_score, 0.7)
+
+    def test_parse_gemini_material_condition_variants(self):
+        raw = """
+        {
+          "dimensions": [],
+          "gdt_callouts": [
+            {
+              "id": "G1",
+              "characteristic": "Position",
+              "tolerance_value": 0.01,
+              "material_condition": "RFS",
+              "datums": ["A"],
+              "feature": "bolt hole"
+            },
+            {
+              "id": "G2",
+              "characteristic": "Position",
+              "tolerance_value": 0.02,
+              "material_condition": "IN FREE STATE",
+              "datums": ["A"],
+              "feature": "free-state profile"
+            }
+          ]
+        }
+        """
+        extractor = DimensionExtractor()
+
+        callouts = extractor._parse_gdt_response(raw)
+
+        self.assertEqual(callouts[0].material_condition, MaterialCondition.RFS)
+        self.assertIsNone(callouts[1].material_condition)
+
+    def test_parse_drawing_links_accepts_empty_list(self):
+        extractor = DimensionExtractor()
+
+        self.assertEqual(extractor._parse_drawing_links([]), {})
 
     def test_process_batch_isolates_failures(self):
         extractor = DimensionExtractor(api_router=FakeRouter("{}"), pdf_converter=FakePDFConverter())

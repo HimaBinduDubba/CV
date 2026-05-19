@@ -1,6 +1,7 @@
 import json
 import hashlib
 import os
+from io import BytesIO
 from typing import Any, Optional, Dict
 from PIL.Image import Image
 
@@ -16,6 +17,9 @@ class ResponseCache:
         for img in images:
             img_metadata = f"{img.size}_{img.mode}"
             hash_obj.update(img_metadata.encode('utf-8'))
+            image_bytes = BytesIO()
+            img.save(image_bytes, format="PNG")
+            hash_obj.update(image_bytes.getvalue())
         return hash_obj.hexdigest()
 
     def get(self, prompt: str, images: list[Image]) -> Optional[Dict[str, Any]]:

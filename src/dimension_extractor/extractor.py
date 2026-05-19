@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
+
+from PIL import Image
 
 from .models import (
     AssemblyRelationship,
@@ -30,16 +31,8 @@ from .scoring import ConfidenceScorer
 from .validation import DataValidator
 
 
-@dataclass(slots=True)
-class APIResponse:
-    raw_text: str
-    confidence_score: float = 1.0
-    provider: str | None = None
-    usage: dict[str, Any] | None = None
-
-
 class APIRouterLike(Protocol):
-    def extract_from_image(self, image: Any, prompt: str) -> APIResponse:
+    def extract_from_image(self, prompt: str, images: list[Any]) -> Any:
         ...
 
 
@@ -82,12 +75,13 @@ class DimensionExtractor:
         prompt = self._build_dimension_prompt(Path(pdf_path).name)
 
         for page in pages:
-            response = self.api_router.extract_from_image(page, prompt)
-            raw_responses.append(response.raw_text)
-            dimensions.extend(self._parse_dimension_response(response.raw_text))
-            gdt_callouts.extend(self._parse_gdt_response(response.raw_text))
-            datums.extend(self._parse_datum_response(response.raw_text))
-            material_specs.extend(self._parse_material_response(response.raw_text))
+            response = self._call_api_router(prompt, [page])
+            raw_text = self._response_text(response)
+            raw_responses.append(raw_text)
+            dimensions.extend(self._parse_dimension_response(raw_text))
+            gdt_callouts.extend(self._parse_gdt_response(raw_text))
+            datums.extend(self._parse_datum_response(raw_text))
+            material_specs.extend(self._parse_material_response(raw_text))
 
         part_id = self._infer_part_id(pdf_path, dimensions, material_specs)
         validation = self._validate_part(dimensions, gdt_callouts, datums)
@@ -111,19 +105,21 @@ class DimensionExtractor:
     def process_assembly_diagram(self, png_path: Path) -> AssemblyResult:
         if self.api_router is None:
             raise RuntimeError("API router dependency is required to process assembly diagrams")
-        response = self.api_router.extract_from_image(Path(png_path), self._build_assembly_prompt())
-        payload = self._extract_json_object(response.raw_text)
+        with Image.open(png_path) as image:
+            response = self._call_api_router(self._build_assembly_prompt(), [image.copy()])
+        raw_text = self._response_text(response)
+        payload = self._extract_json_object(raw_text)
         relationships = self._parse_assembly_relationships(payload)
         part_ids = list(dict.fromkeys(payload.get("part_ids", []) + [p for r in relationships for p in (r.part1_id, r.part2_id)]))
-        drawing_links = {str(k): str(v) for k, v in payload.get("drawing_links", {}).items()}
-        scores = [relationship.confidence_score for relationship in relationships] or [response.confidence_score]
+        drawing_links = self._parse_drawing_links(payload.get("drawing_links", {}))
+        scores = [relationship.confidence_score for relationship in relationships] or [self._response_confidence(response)]
         return AssemblyResult(
             source_file=Path(png_path),
             part_ids=part_ids,
             relationships=relationships,
             drawing_links=drawing_links,
             confidence_score=sum(scores) / len(scores),
-            raw_response=response.raw_text,
+            raw_response=raw_text,
         )
 
     def process_batch(self, file_paths: list[Path]) -> BatchResult:
@@ -205,18 +201,53 @@ class DimensionExtractor:
             "bolted, pressed, welded, adhesive, contact, threaded, or clearance."
         )
 
+    def _call_api_router(self, prompt: str, images: list[Any]) -> Any:
+        """Call the Dev 2 router while keeping old test doubles usable."""
+        try:
+            return self.api_router.extract_from_image(prompt, images)
+        except TypeError:
+            if len(images) != 1:
+                raise
+            return self.api_router.extract_from_image(images[0], prompt)
+
+    @staticmethod
+    def _response_text(response: Any) -> str:
+        if hasattr(response, "raw_text"):
+            return str(response.raw_text)
+        structured_data = getattr(response, "structured_data", None)
+        if structured_data is not None:
+            return json.dumps(structured_data)
+        raw_response = getattr(response, "raw_response", None)
+        if isinstance(raw_response, dict):
+            text = raw_response.get("text")
+            if isinstance(text, str):
+                return text
+            return json.dumps(raw_response)
+        if isinstance(raw_response, str):
+            return raw_response
+        raise ValueError("API response did not contain parseable text or structured data")
+
+    @staticmethod
+    def _response_confidence(response: Any) -> float:
+        if hasattr(response, "confidence_score"):
+            return float(response.confidence_score)
+        return float(getattr(response, "confidence", 0.0))
+
     def _parse_dimension_response(self, raw_text: str) -> list[Dimension]:
         payload = self._extract_json_object(raw_text)
         dimensions: list[Dimension] = []
         for item in payload.get("dimensions", []):
             tolerance_data = item.get("tolerance")
+            nominal_value = self._dimension_nominal(item, tolerance_data)
+            if nominal_value is None:
+                continue
             dimensions.append(
                 Dimension(
-                    id=str(item["id"]),
-                    nominal_value=float(item["nominal_value"]),
-                    unit=str(item["unit"]),
+                    id=str(item.get("id", f"D{len(dimensions) + 1}")),
+                    nominal_value=nominal_value,
+                    unit=str(item.get("unit") or (tolerance_data or {}).get("unit") or ""),
                     measured_feature=str(item.get("measured_feature", "")),
-                    part_id=str(item.get("part_id", "")),
+                    part_id=str(item.get("part_id") or ""),
                     tolerance=self._parse_tolerance_response(tolerance_data) if tolerance_data else None,
                     source_page=item.get("source_page"),
                     source_zone=item.get("source_zone"),
@@ -238,8 +269,8 @@ class DimensionExtractor:
             tolerance_type=tolerance_type,
             plus=self._optional_float(tolerance_data.get("plus")),
             minus=self._optional_float(tolerance_data.get("minus")),
-            lower_limit=self._optional_float(tolerance_data.get("lower_limit")),
-            upper_limit=self._optional_float(tolerance_data.get("upper_limit")),
+            lower_limit=self._optional_float(tolerance_data.get("lower_limit", tolerance_data.get("min"))),
+            upper_limit=self._optional_float(tolerance_data.get("upper_limit", tolerance_data.get("max"))),
             unit=tolerance_data.get("unit"),
             confidence_score=float(tolerance_data.get("confidence_score", 1.0)),
         )
@@ -248,15 +279,26 @@ class DimensionExtractor:
         payload = self._extract_json_object(raw_text)
         callouts: list[GDTCallout] = []
         for item in payload.get("gdt_callouts", []):
+            symbol_value = item.get("symbol_type") or item.get("characteristic") or item.get("type")
+            tolerance_zone = self._optional_float(item.get("tolerance_zone", item.get("tolerance_value")))
+            if not symbol_value or tolerance_zone is None:
+                continue
+            controlled_feature = (
+                item.get("controlled_feature")
+                or item.get("feature_controlled")
+                or item.get("feature")
+                or item.get("measured_feature")
+                or ""
+            )
             callouts.append(
                 GDTCallout(
-                    id=str(item["id"]),
-                    symbol_type=GDTSymbol(str(item["symbol_type"])),
-                    tolerance_zone=float(item["tolerance_zone"]),
+                    id=str(item.get("id", f"GDT{len(callouts) + 1}")),
+                    symbol_type=self._gdt_symbol(symbol_value),
+                    tolerance_zone=tolerance_zone,
                     material_condition=self._optional_enum(MaterialCondition, item.get("material_condition")),
-                    datum_references=[str(value) for value in item.get("datum_references", [])],
-                    controlled_feature=str(item.get("controlled_feature", "")),
-                    part_id=str(item.get("part_id", "")),
+                    datum_references=[str(value) for value in item.get("datum_references", item.get("datums", []))],
+                    controlled_feature=str(controlled_feature),
+                    part_id=str(item.get("part_id") or ""),
                     confidence_score=float(item.get("confidence_score", 0.5)),
                 )
             )
@@ -264,45 +306,77 @@ class DimensionExtractor:
 
     def _parse_datum_response(self, raw_text: str) -> list[Datum]:
         payload = self._extract_json_object(raw_text)
-        return [
-            Datum(
-                id=str(item.get("id", item["label"])),
-                label=str(item["label"]),
-                feature_description=str(item.get("feature_description", "")),
-                part_id=str(item.get("part_id", "")),
-                confidence_score=float(item.get("confidence_score", 0.5)),
+        datums: list[Datum] = []
+        for item in payload.get("datums", []):
+            label = item.get("label") or item.get("name") or item.get("datum_id") or item.get("datum_letter") or item.get("feature_identifier") or item.get("id")
+            if not label:
+                continue
+            feature_description = (
+                item.get("feature_description")
+                or item.get("feature_referenced")
+                or item.get("location_reference")
+                or item.get("description")
+                or ""
             )
-            for item in payload.get("datums", [])
-        ]
+            datums.append(
+                Datum(
+                    id=str(item.get("id", label)),
+                    label=str(label),
+                    feature_description=str(feature_description),
+                    part_id=str(item.get("part_id") or ""),
+                    confidence_score=float(item.get("confidence_score", 0.5)),
+                )
+            )
+        return datums
 
     def _parse_material_response(self, raw_text: str) -> list[MaterialSpec]:
         payload = self._extract_json_object(raw_text)
-        return [
-            MaterialSpec(
-                material_type=str(item["material_type"]),
-                material_grade=item.get("material_grade"),
-                surface_finish=item.get("surface_finish"),
-                heat_treatment=item.get("heat_treatment"),
-                part_id=str(item.get("part_id", "")),
-                confidence_score=float(item.get("confidence_score", 0.5)),
+        specs: list[MaterialSpec] = []
+        for item in payload.get("material_specs", []):
+            material_type = item.get("material_type") or item.get("material") or item.get("material_name") or item.get("specification") or item.get("spec_name")
+            if not material_type:
+                continue
+            specs.append(
+                MaterialSpec(
+                    material_type=str(material_type),
+                    material_grade=item.get("material_grade") or item.get("grade") or item.get("specifications") or item.get("spec_number"),
+                    surface_finish=item.get("surface_finish"),
+                    heat_treatment=item.get("heat_treatment"),
+                    part_id=str(item.get("part_id") or ""),
+                    confidence_score=float(item.get("confidence_score", 0.5)),
+                )
             )
-            for item in payload.get("material_specs", [])
-        ]
+        return specs
 
     def _parse_assembly_relationships(self, payload: dict[str, Any]) -> list[AssemblyRelationship]:
         relationships: list[AssemblyRelationship] = []
         for item in payload.get("relationships", []):
+            mating_surfaces = item.get("mating_surfaces") or []
             relationships.append(
                 AssemblyRelationship(
-                    part1_id=str(item["part1_id"]),
-                    part2_id=str(item["part2_id"]),
-                    mating_surface1=str(item.get("mating_surface1", "")),
-                    mating_surface2=str(item.get("mating_surface2", "")),
-                    relationship_type=RelationshipType(str(item.get("relationship_type", "contact"))),
+                    part1_id=str(item.get("part1_id", item.get("part1", ""))),
+                    part2_id=str(item.get("part2_id", item.get("part2", ""))),
+                    mating_surface1=str(item.get("mating_surface1") or (mating_surfaces[0] if len(mating_surfaces) > 0 else "")),
+                    mating_surface2=str(item.get("mating_surface2") or (mating_surfaces[1] if len(mating_surfaces) > 1 else "")),
+                    relationship_type=RelationshipType(str(item.get("relationship_type", item.get("type", "contact")))),
                     confidence_score=float(item.get("confidence_score", 0.5)),
                 )
             )
         return relationships
+
+    @staticmethod
+    def _parse_drawing_links(raw_links: Any) -> dict[str, str]:
+        if isinstance(raw_links, dict):
+            return {str(key): str(value) for key, value in raw_links.items()}
+        links: dict[str, str] = {}
+        if isinstance(raw_links, list):
+            for item in raw_links:
+                if isinstance(item, dict):
+                    part_id = item.get("part_id") or item.get("part") or item.get("label")
+                    drawing = item.get("drawing") or item.get("drawing_file") or item.get("file")
+                    if part_id and drawing:
+                        links[str(part_id)] = str(drawing)
+        return links
 
     def _validate_part(
         self,
@@ -336,11 +410,59 @@ class DimensionExtractor:
 
     @staticmethod
     def _optional_float(value: Any) -> float | None:
-        return None if value is None else float(value)
+        if value is None:
+            return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    @classmethod
+    def _dimension_nominal(cls, item: dict[str, Any], tolerance_data: dict[str, Any] | str | None) -> float | None:
+        nominal = cls._optional_float(item.get("nominal_value"))
+        if nominal is not None:
+            return nominal
+        if isinstance(tolerance_data, dict):
+            lower = cls._optional_float(tolerance_data.get("lower_limit", tolerance_data.get("min")))
+            upper = cls._optional_float(tolerance_data.get("upper_limit", tolerance_data.get("max")))
+            if lower is not None and upper is not None:
+                return (lower + upper) / 2.0
+        return None
+
+    @staticmethod
+    def _gdt_symbol(value: Any) -> GDTSymbol:
+        normalized = str(value).strip().lower().replace(" ", "_").replace("-", "_")
+        aliases = {
+            "geometric_control": GDTSymbol.POSITION,
+            "clearance_envelope": GDTSymbol.PROFILE_OF_SURFACE,
+        }
+        if normalized in aliases:
+            return aliases[normalized]
+        try:
+            return GDTSymbol(normalized)
+        except ValueError:
+            return GDTSymbol.POSITION
 
     @staticmethod
     def _optional_enum(enum_type: type[Any], value: Any) -> Any | None:
-        return None if value is None else enum_type(str(value))
+        if value is None:
+            return None
+        normalized = str(value).strip().lower().replace(" ", "_").replace("-", "_")
+        if enum_type is MaterialCondition:
+            aliases = {
+                "mmc": MaterialCondition.MMC,
+                "maximum_material_condition": MaterialCondition.MMC,
+                "lmc": MaterialCondition.LMC,
+                "least_material_condition": MaterialCondition.LMC,
+                "rfs": MaterialCondition.RFS,
+                "regardless_of_feature_size": MaterialCondition.RFS,
+                "regardless_of_size": MaterialCondition.RFS,
+            }
+            return aliases.get(normalized)
+        try:
+            return enum_type(str(value))
+        except ValueError:
+            return None
 
     @staticmethod
     def _infer_part_id(pdf_path: Path, dimensions: list[Dimension], material_specs: list[MaterialSpec]) -> str:

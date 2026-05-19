@@ -1,0 +1,276 @@
+{
+  "metadata": {
+    "purpose": "Relevant dimensions for bolt protrusion tolerance stack-up",
+    "basis": "PPT stack-up deck + extracted Gemini drawing data",
+    "full_extraction_file": "Data/extraction_results_gemini.json"
+  },
+  "stackup_chain": "bolt_protrusion_at_flange_2_interface",
+  "relevant_dimensions": [
+    {
+      "stack_no": 1,
+      "source_file": "AS2159-Washer.pdf",
+      "source_reference": "PPT slide 4 / AS2159 table, column C (washer thickness). Extracted table values show ST2159 washer thickness rows.",
+      "part": "Washer",
+      "dimension_name": "Washer thickness C",
+      "selected_value_basis": "AS2159 washer table; assembly washer exact dash number not specified in diagram. Use matching project washer row after engineer confirmation.",
+      "nominal_mm": null,
+      "plus_mm": null,
+      "minus_mm": null,
+      "lower_mm": null,
+      "upper_mm": null,
+      "sign": -1,
+      "status": "needs_dash_number_confirmation",
+      "reason": "Washer axial thickness reduces bolt protrusion.",
+      "stackup_use": "needs_confirmation_before_calculation"
+    },
+    {
+      "stack_no": 2,
+      "source_file": "5377631-01-Rare_case.pdf",
+      "source_reference": "PPT slide 4 / rear case drawing label 2",
+      "part": "Rear case / flange side",
+      "dimension_name": "Flange/interface axial offset 8.76 +/-0.13",
+      "selected_value_basis": "Visible in PPT image7 and extracted from 5377632 page as D2; verify drawing ownership because PPT slide associates label 2 with 5377631-01.",
+      "nominal_mm": 8.76,
+      "plus_mm": 0.13,
+      "minus_mm": 0.13,
+      "lower_mm": 8.63,
+      "upper_mm": 8.89,
+      "sign": -1,
+      "status": "verify_source_file",
+      "reason": "Axial stack thickness contributor at flange interface.",
+      "stackup_use": "needs_confirmation_before_calculation"
+    },
+    {
+      "stack_no": 3,
+      "source_file": "5377630-01-Front_case.pdf",
+      "source_reference": "PPT slide 4 / front case drawing label 3",
+      "part": "Front case / flange side",
+      "dimension_name": "Flange/interface axial offset 5.08 +/-0.13",
+      "selected_value_basis": "Visible in PPT image6 and extracted as Front_case D5.",
+      "nominal_mm": 5.08,
+      "plus_mm": 0.13,
+      "minus_mm": 0.13,
+      "lower_mm": 4.95,
+      "upper_mm": 5.21,
+      "sign": -1,
+      "status": "selected",
+      "reason": "Axial stack thickness contributor at flange interface.",
+      "stackup_use": "use_after_engineer_review"
+    },
+    {
+      "stack_no": 4,
+      "source_file": "5377632-R10AS.pdf",
+      "source_reference": "PPT slide 4 / R10AS drawing label 4",
+      "part": "R10AS / bracket",
+      "dimension_name": "Axial offset 6.35 +/-0.13",
+      "selected_value_basis": "Visible in PPT image8.",
+      "nominal_mm": 6.35,
+      "plus_mm": 0.13,
+      "minus_mm": 0.13,
+      "lower_mm": 6.22,
+      "upper_mm": 6.48,
+      "sign": -1,
+      "status": "selected",
+      "reason": "Axial stack thickness contributor through bracket/flange region.",
+      "stackup_use": "use_after_engineer_review"
+    },
+    {
+      "stack_no": 5,
+      "source_file": "5377632-R10AS.pdf",
+      "source_reference": "PPT slide 4 / R10AS drawing label 5",
+      "part": "R10AS / bracket",
+      "dimension_name": "Axial offset 6.10 +/-0.13",
+      "selected_value_basis": "Visible in PPT image8.",
+      "nominal_mm": 6.1,
+      "plus_mm": 0.13,
+      "minus_mm": 0.13,
+      "lower_mm": 5.97,
+      "upper_mm": 6.23,
+      "sign": -1,
+      "status": "selected",
+      "reason": "Axial stack thickness contributor through bracket/flange region.",
+      "stackup_use": "use_after_engineer_review"
+    },
+    {
+      "stack_no": 6,
+      "source_file": "AS3580-Bolt.pdf",
+      "source_reference": "PPT slide 5 / AS3580 table, selected AS3580-5-22 row",
+      "part": "Bolt",
+      "dimension_name": "Bolt length L",
+      "selected_value_basis": "PPT image12 table: AS3580-5-22 L=1.375 +/-0.010 in = 34.925 +/-0.254 mm.",
+      "nominal_mm": 34.925,
+      "plus_mm": 0.254,
+      "minus_mm": 0.254,
+      "lower_mm": 34.671,
+      "upper_mm": 35.179,
+      "sign": 1,
+      "status": "selected",
+      "reason": "Bolt length increases protrusion.",
+      "stackup_use": "use_after_engineer_review"
+    },
+    {
+      "stack_no": 7,
+      "source_file": "ST2780-Nut.pdf",
+      "source_reference": "PPT slide 5 / ST2780 optional nut table, selected ST2780-09 row",
+      "part": "Nut",
+      "dimension_name": "Nut height H",
+      "selected_value_basis": "PPT image11 table: ST2780-09 H=.150-.190 in = 3.810-4.826 mm.",
+      "nominal_mm": 4.318,
+      "plus_mm": 0.508,
+      "minus_mm": 0.508,
+      "lower_mm": 3.8099999999999996,
+      "upper_mm": 4.826,
+      "sign": -1,
+      "status": "selected_optional_nut",
+      "reason": "Nut axial height consumes bolt length before visible protrusion.",
+      "stackup_use": "use_after_engineer_review"
+    },
+    {
+      "stack_no": 8,
+      "source_file": "CICR_CI-CICR-SDCI-P30-JB-PH-02-FR-E / UG measurement",
+      "source_reference": "PPT slide 5 note: chamfer length measured from UG",
+      "part": "Interface chamfer",
+      "dimension_name": "Chamfer length from UG",
+      "selected_value_basis": "Not present as a reliable drawing-table extraction. Needs UG/CAD measurement input.",
+      "nominal_mm": null,
+      "plus_mm": null,
+      "minus_mm": null,
+      "lower_mm": null,
+      "upper_mm": null,
+      "sign": null,
+      "status": "requires_UG_measurement",
+      "reason": "Chamfer correction affects effective protrusion measurement plane.",
+      "stackup_use": "needs_confirmation_before_calculation"
+    }
+  ],
+  "ppt_reference_values": [
+    {
+      "name": "PPT shown bolt protrusion nominal",
+      "value_mm": 4.934,
+      "unit": "mm",
+      "source": "PPT image15"
+    },
+    {
+      "name": "PPT shown stack thickness",
+      "value_mm": 31.75,
+      "plus_mm": 0.25,
+      "minus_mm": 0.25,
+      "unit": "mm",
+      "source": "PPT image15"
+    },
+    {
+      "name": "PPT shown secondary offset",
+      "value_mm": 1.06,
+      "unit": "mm",
+      "source": "PPT image15; tolerance not visible in extracted image"
+    }
+  ],
+  "provisional_calculation": {
+    "known_contributors_only_nominal_mm": 4.316999999999998,
+    "known_contributors_only_worst_min_mm": 3.0349999999999984,
+    "known_contributors_only_worst_max_mm": 5.599000000000002,
+    "note": "This is not the final project protrusion because stack items 1 and 8 require confirmation/input and PPT target includes measurement-plane details."
+  },
+  "assembly_sequence": [
+    "Bolt",
+    "Left Nut",
+    "Left Flange",
+    "Bracket",
+    "Washer",
+    "Right Nut"
+  ],
+  "assembly_relationships": [
+    {
+      "part1_id": "Left Nut",
+      "part2_id": "Bolt",
+      "mating_surface1": "internal threads of Left Nut",
+      "mating_surface2": "external threads of Bolt",
+      "relationship_type": "threaded",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Left Nut",
+      "part2_id": "Left Flange",
+      "mating_surface1": "bearing face of Left Nut",
+      "mating_surface2": "top bearing surface of Left Flange",
+      "relationship_type": "contact",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Bolt",
+      "part2_id": "Left Flange",
+      "mating_surface1": "cylindrical shaft of Bolt",
+      "mating_surface2": "through-hole in Left Flange",
+      "relationship_type": "clearance",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Left Flange",
+      "part2_id": "Bracket",
+      "mating_surface1": "bottom face of Left Flange",
+      "mating_surface2": "top face of Bracket",
+      "relationship_type": "contact",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Bolt",
+      "part2_id": "Bracket",
+      "mating_surface1": "cylindrical shaft of Bolt",
+      "mating_surface2": "through-hole in Bracket",
+      "relationship_type": "clearance",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Bracket",
+      "part2_id": "Washer",
+      "mating_surface1": "bottom face of Bracket",
+      "mating_surface2": "top face of Washer",
+      "relationship_type": "contact",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Bolt",
+      "part2_id": "Washer",
+      "mating_surface1": "cylindrical shaft of Bolt",
+      "mating_surface2": "through-hole in Washer",
+      "relationship_type": "clearance",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Washer",
+      "part2_id": "Right Nut",
+      "mating_surface1": "bottom face of Washer",
+      "mating_surface2": "top bearing face of Right Nut",
+      "relationship_type": "contact",
+      "confidence_score": 0.5
+    },
+    {
+      "part1_id": "Right Nut",
+      "part2_id": "Bolt",
+      "mating_surface1": "internal threads of Right Nut",
+      "mating_surface2": "external threads of Bolt",
+      "relationship_type": "threaded",
+      "confidence_score": 0.5
+    }
+  ],
+  "recommended_stackup_model": {
+    "primary_output": "bolt_protrusion_at_flange_2_interface",
+    "ppt_nominal_result_mm": 4.934,
+    "ppt_worst_case_result": "3.6 threads",
+    "known_direct_stack_dimension": {
+      "name": "assembly stack thickness shown in section",
+      "nominal_mm": 31.75,
+      "plus_mm": 0.25,
+      "minus_mm": 0.25,
+      "source": "PPT image15"
+    },
+    "bolt_length_selected": {
+      "part_number": "AS3580-5-22",
+      "nominal_mm": 34.925,
+      "plus_mm": 0.254,
+      "minus_mm": 0.254,
+      "source": "AS3580 table in PPT image12"
+    },
+    "caution": "Do not use the provisional contributor sum as the final answer until washer dash number and UG chamfer/measurement-plane offset are confirmed. The PPT already states the project target nominal protrusion as 4.934 mm."
+  }
+}

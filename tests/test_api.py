@@ -73,6 +73,17 @@ def test_response_cache(temp_cache_dir):
     cache.invalidate_all()
     assert cache.get(prompt, [img]) is None
 
+def test_response_cache_distinguishes_same_size_images(temp_cache_dir):
+    cache = ResponseCache(cache_dir=temp_cache_dir)
+    prompt = "Extract dimensions"
+    white = Image.new('RGB', (10, 10), "white")
+    black = Image.new('RGB', (10, 10), "black")
+
+    cache.set(prompt, [white], {"page": "white"})
+
+    assert cache.get(prompt, [white]) == {"page": "white"}
+    assert cache.get(prompt, [black]) is None
+
 def test_retry_handler_success():
     handler = RetryHandler(max_attempts=3)
     mock_func = Mock(return_value="success")

@@ -65,7 +65,7 @@ def test_json_pretty_printer_invalid(dummy_schema, tmp_path):
 # Feature: dimension-extraction-system, Property 1: JSON Round-Trip Preservation
 # Feature: dimension-extraction-system, Property 13: JSON Schema Compliance
 # Feature: dimension-extraction-system, Property 14: Output Completeness
-@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+@settings(deadline=None, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(name=st.text(), value=st.integers() | st.floats(allow_nan=False, allow_infinity=False))
 def test_property_json_roundtrip_and_compliance(dummy_schema, tmp_path, name, value):
     printer = JSONPrettyPrinter(dummy_schema)

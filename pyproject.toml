@@ -3,4 +3,20 @@ name = "dimension-extraction-system"
 version = "0.1.0"
 description = "Engineering drawing dimension extraction data processing core"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "google-generativeai",
+    "jsonschema",
+    "pdf2image",
+    "Pillow",
+    "tenacity",
+]
+
+[project.optional-dependencies]
+dev = [
+    "hypothesis",
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+testpaths = ["tests"]

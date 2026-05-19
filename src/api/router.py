@@ -26,7 +26,7 @@ class APIRouter:
         if config.provider == "gemini":
             if not config.gemini_api_key:
                 raise ValueError("Gemini API key is required but not provided.")
-            return GeminiVisionAdapter(api_key=config.gemini_api_key)
+            return GeminiVisionAdapter(api_key=config.gemini_api_key, model_name=config.gemini_model)
         elif config.provider == "gpt4":
             if not config.openai_api_key:
                 raise ValueError("OpenAI API key is required but not provided.")

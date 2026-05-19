@@ -6,10 +6,9 @@ from .models import APIResponse
 import google.generativeai as genai
 
 class GeminiVisionAdapter(APIVisionAdapter):
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, model_name: str = "gemini-2.5-flash"):
         genai.configure(api_key=api_key)
-        # Using gemini-1.5-pro for vision tasks and structured outputs
-        self.model = genai.GenerativeModel('gemini-1.5-pro')
+        self.model = genai.GenerativeModel(model_name)
 
     def call_api(self, prompt: str, images: list[Image]) -> APIResponse:
         # Assuming images are PIL Image objects which genai can handle directly

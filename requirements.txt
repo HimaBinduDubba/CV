@@ -2,5 +2,6 @@ pdf2image
 Pillow
 jsonschema
 tenacity
+google-generativeai
 pytest
 hypothesis
