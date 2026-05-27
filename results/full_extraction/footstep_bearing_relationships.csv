@@ -1,0 +1,19 @@
+From,To,Relationship,Surface 1,Surface 2,Confidence
+Bush,SupportingBracket,press_fit,outer cylindrical surface of Bush (Ø65),inner bore of Supporting Bracket (Ø65),0.95
+Bush,SupportingBracket,contact,bottom face of Bush collar (Ø76 flange),top face of Supporting Bracket boss (Ø94),0.95
+Shaft,Bush,clearance_fit,outer cylindrical surface of Shaft (Ø50),inner bore of Bush (Ø50),0.95
+Shaft,ThrustPad,contact,spherical end face of Shaft (SR105),concave spherical seat of Thrust Pad (SR105),0.95
+ThrustPad,SupportingBracket,contact,flat bottom face of Thrust Pad,base inner floor of Supporting Bracket bore recess,0.9
+ThrustPad,Bush,contact,outer cylindrical rim of Thrust Pad (Ø50),inner bore bottom chamfer of Bush (3×45°),0.9
+Pin,SupportingBracket,interference_fit,outer cylindrical surface of Pin (Ø3),pin hole in Supporting Bracket base (Ø3 deep 5),0.95
+Pin,ThrustPad,clearance,outer cylindrical surface of Pin (Ø3),pin hole in Thrust Pad (Ø3),0.9
+LockingPlate,Bush,contact,inner flat edge of Locking Plate,flat face milled on collar circumference of Bush,0.95
+LockingPlate,SupportingBracket,contact,outer flat edge of Locking Plate,top face of Supporting Bracket boss,0.9
+CSKScrew,SupportingBracket,threaded,external M3 thread of CSK Screw,internal M3 tapped hole in Supporting Bracket (Ø2.5 deep 10 tap M3),0.95
+CSKScrew,LockingPlate,contact,CSK head face of Screw (90° included angle),countersunk recess of Locking Plate (Ø3.2 clearance hole),0.95
+Bush,LockingPlate,rotational_constraint,flat face on Bush collar circumference,flat face of Locking Plate (prevents bush rotation with shaft),0.95
+Pin,SupportingBracket,rotational_constraint,cylindrical body of Pin (in bracket hole),pin hole floor of Supporting Bracket (Ø3 deep 5),0.9
+Pin,ThrustPad,rotational_constraint,protruding portion of Pin,pin hole of Thrust Pad (prevents pad rotation with shaft),0.9
+Shaft,Bush,axial_constraint,shoulder/collar end face of Shaft,top collar face of Bush (vertical load transfer),0.85
+ThrustPad,Shaft,axial_load_transfer,concave spherical face of Thrust Pad (SR105),spherical end of Shaft (SR105 - supports axial thrust),0.95
+Bush,SupportingBracket,anti_rotation,flat face on Bush collar outer circumference,locking plate butted against Supporting Bracket face,0.9

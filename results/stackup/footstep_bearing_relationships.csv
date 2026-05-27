@@ -1,0 +1,13 @@
+From,To,Relationship,Surface 1,Surface 2,Confidence
+Supporting Bracket,Gun Metal Bush,press fit,inner bore of Supporting Bracket,outer cylindrical surface of Gun Metal Bush,0.950
+Gun Metal Bush,Shaft,clearance fit,inner bore of Gun Metal Bush,outer cylindrical surface of Shaft,0.950
+Gun Metal Bush,Supporting Bracket,contact,bottom face of Gun Metal Bush collar,top face of Supporting Bracket,0.950
+Locking Plate,Gun Metal Bush,contact,inner face of Locking Plate,flat face on collar circumference of Gun Metal Bush,0.950
+Locking Plate,Supporting Bracket,contact,bottom face of Locking Plate,top seating face of Supporting Bracket,0.950
+CSK Screw,Locking Plate,threaded,external threads of CSK Screw,CSK countersunk hole in Locking Plate,0.950
+CSK Screw,Supporting Bracket,threaded,external threads of CSK Screw,threaded hole in Supporting Bracket,0.950
+Pin,Thrust Pad,press fit,cylindrical surface of Pin (lower half),pin hole in Thrust Pad,0.900
+Pin,Supporting Bracket,press fit,cylindrical surface of Pin (upper half),pin hole in Supporting Bracket,0.900
+Thrust Pad,Supporting Bracket,contact,bottom face of Thrust Pad,base inner seating face of Supporting Bracket,0.950
+Shaft,Thrust Pad,contact,bottom end face of Shaft,top face of Thrust Pad,0.950
+Shaft,Gun Metal Bush,rotational clearance,journal surface of Shaft,inner bore of Gun Metal Bush,0.950

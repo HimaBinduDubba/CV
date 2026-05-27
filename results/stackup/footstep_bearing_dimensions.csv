@@ -1,0 +1,30 @@
+source_file,part_id,dimension_id,nominal_value,unit,measured_feature,tolerance_plus,tolerance_minus,lower_lim,upper_lim,confidence,source_page,requires_human_review
+Fig20.15_FootstepJournalBearing,Part1-SupportingBracket,D1,missing,mm,Base plate length,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part1-SupportingBracket,D2,missing,mm,Base plate width,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part1-SupportingBracket,D3,missing,mm,Base plate thickness,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part1-SupportingBracket,D4,missing,mm,Bore diameter for bush,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part1-SupportingBracket,D5,missing,mm,Overall height of bracket,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part1-SupportingBracket,D6,missing,mm,Bolt hole diameter,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part2-GunMetalBush,D7,missing,mm,Outer diameter of bush,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part2-GunMetalBush,D8,missing,mm,Inner diameter of bush (shaft bore),missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part2-GunMetalBush,D9,missing,mm,Bush length,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part2-GunMetalBush,D10,missing,mm,Collar outer diameter,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part2-GunMetalBush,D11,missing,mm,Collar thickness,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part2-GunMetalBush,D12,missing,mm,Flat face width on collar circumference,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part3-Pin,D13,missing,mm,Pin diameter,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part3-Pin,D14,missing,mm,Pin total length,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part3-Pin,D15,missing,mm,Pin depth into thrust pad,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part3-Pin,D16,missing,mm,Pin depth into supporting bracket,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part4-ThrustPad,D17,missing,mm,Thrust pad diameter,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part4-ThrustPad,D18,missing,mm,Thrust pad thickness,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part4-ThrustPad,D19,missing,mm,Pin hole diameter in thrust pad,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part5-Shaft,D20,missing,mm,Shaft diameter,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part5-Shaft,D21,missing,mm,Shaft overall length,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part5-Shaft,D22,missing,mm,Shaft journal length (inside bush),missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part6-LockingPlate,D23,missing,mm,Locking plate length,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part6-LockingPlate,D24,missing,mm,Locking plate width,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part6-LockingPlate,D25,missing,mm,Locking plate thickness,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part6-LockingPlate,D26,missing,mm,CSK screw hole diameter in locking plate,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part7-CSKScrew,D27,missing,mm,CSK screw thread diameter,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part7-CSKScrew,D28,missing,mm,CSK screw length,missing,missing,,,0.75225,1,TRUE
+Fig20.15_FootstepJournalBearing,Part7-CSKScrew,D29,missing,deg,CSK head angle,missing,missing,,,0.75225,1,TRUE
